@@ -15,8 +15,8 @@ Besides the panel, you have the full previllege of your platform and manage it b
 OS-API Reference: [https://docs.oneshop.dev](https://docs.oneshop.dev)  
 
 ## Create your own platform?
-1. Get your API Key at [Oneshop Panel](https://panel.oneshop.cloud) **Available soon**  
-2. or contact us at [hello@oneshop.team](mailto://hello.oneshop.team)  
+1. Get your API Key at [Oneshop Panel](https://panel.oneshop.cloud) **(Available soon)**  
+2. or contact us at [hello@oneshop.team](mailto:hello.oneshop.team)  
 
 ## We need you!
 We are continously looking for someone to contribute and make the eco-system of ecommerce better!  
