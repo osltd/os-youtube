@@ -253,7 +253,7 @@ router.post('/release', (req, res) => {
                 'INSERT INTO videos (video_id, os_shop_id, os_feed_id, video_thumbnail, quota_used) VALUES (?,?,?,?,?)',
                 [video.data.id, data.article.shop.id, req.body.feed, ((video.data.snippet.thumbnails || {}).high || {}).url, 1605]
             )
-            .then(res => !result.affectedRows ? reject({
+            .then(res => !res.affectedRows ? reject({
                 code    : 500,
                 message : `video.save.error`
             }) : resolve())
