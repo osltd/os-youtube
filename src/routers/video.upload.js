@@ -12,7 +12,7 @@ const OAuth2     = google.auth.OAuth2;
 const youtubeApi = google.youtube('v3');
 const aws        = require('aws-sdk');
 const s3         = new aws.S3(config.S3);
-const BUCKET     = 'assets.oneshop.cloud';
+const BUCKET     = 'cdn.oneshop.cloud';
 
 
 
