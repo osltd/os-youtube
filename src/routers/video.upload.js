@@ -85,7 +85,6 @@ router.post('/release', (req, res) => {
         data.section = section;
         // validate video
         (section.medias || []).forEach(media => {
-            console.log(media.ext);
             // a kind of video?
             if(/^mov|mpeg4|mp4|avi|wmv|mpegps|flv|3gpp|webm|dnxhr|prores|cineform|hevc|qt$/i.test(media.ext)){
                 // save file
@@ -191,6 +190,8 @@ router.post('/release', (req, res) => {
             params.part = 'snippet';
             // update youtube
             youtubeApi.videos.update(params, (err, result) => {
+                // save response
+                data.ytRes = err ? err : result;
                 if (err) {
                     console.error('\n\n\n =====> videos.update error');
                     console.error(err);
@@ -227,6 +228,9 @@ router.post('/release', (req, res) => {
             console.log(params);
             // upload video
             youtubeApi.videos.insert(params, (err, result) => {
+                // save response
+                data.ytRes = err ? err : result;
+                // handle result
                 if (err) {
                     console.error('\n\n\n =====> videos.insert error');
                     console.error(err);
@@ -261,13 +265,44 @@ router.post('/release', (req, res) => {
             .catch(reject);
         }
     }))
+    // save log
+    .then(() => db.query(
+        "INSERT INTO `logs` (`feed_id`, `shop_id`, `log_result`, `log_action`, `log_response_context`) VALUES (?,?,?,?,?)",
+        [
+            req.body.feed, 
+            data.article.shop.id, 
+            'SUCCESS', 
+            data.youtubeFeed ? 'UPDATE' : 'CREATE', 
+            !/^string$/i.test(typeof data.ytRes) ? JSON.stringify(data.ytRes) : data.ytRes
+        ]
+    ))
     // all process finished
     .then(() => res.status(200).end('posted'))
     // output error
-    .catch(err => res.status(err.code || 500).json({
-        result   : false,
-        messages : Array.isArray(err.message || err) ? (err.message || err) : [err.message || err]
-    }));
+    .catch(err => {
+        // create log
+        db.query(
+            "INSERT INTO `logs` (`feed_id`, `shop_id`, `log_result`, `log_action`, `log_response_context`) VALUES (?,?,?,?,?)",
+            [
+                req.body.feed, 
+                data.article.shop.id, 
+                'FAILED', 
+                data.youtubeFeed ? 'UPDATE' : 'CREATE',
+                !/^string$/i.test(typeof err) ? JSON.stringify(err) : err
+            ]
+        )
+        // response
+        .then(result => res.status(401).json({
+            result   : false,
+            messages : `post.failed`
+        }))
+        // db error
+        .catch(error => {
+            res.status(500).json({
+            result   : false,
+            messages : `save.error.failed:${error}`
+        })});
+    });
 
 });
 
