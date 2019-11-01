@@ -40,7 +40,7 @@ router.get('/auth/youtube/callback', passport.authenticate('youtube',{ failureRe
     new Promise((resolve, reject) => {
         // check profile existence
         db.query(`SELECT * FROM profiles WHERE profile_id = ?`, [req.user.id])
-        .then(rows => rows.length ? reject(`user.[${req.user.id}].notfound`) : resolve())
+        .then(rows => !rows.length ? reject(`user.[${req.user.id}].notfound`) : resolve())
         .catch(reject);
     })
     // fetch shop id by token
