@@ -24,9 +24,6 @@ passport.use(new youTubeV3Strategy({
       access_type : 'offline'
     }
 }, (accessToken, refreshToken, profile, done) => {
-    console.log(accessToken);
-    console.log(refreshToken);
-    console.log(profile);
     // create profile
     db.query(
         `REPLACE INTO profiles (profile_id, profile_display_name, profile_access_token, profile_refresh_token) VALUES (?,?,?,?)`,
