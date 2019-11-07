@@ -177,7 +177,7 @@ router.post('/release', (req, res) => {
                 snippet: {
                     title       : data.section.title,
                     categoryId  : 2,
-                    description : h2p(data.section.description) + data.article.sections.length > 0 ? `\n▶ https://${req.hostname}/articles/${req.body.feed}` : "",
+                    description : h2p(data.section.description) + (data.article.sections.length > 0 ? `\n▶ https://${req.hostname}/articles/${req.body.feed}` : ""),
                     tags        : data.section.tags || []
                 }
             }
