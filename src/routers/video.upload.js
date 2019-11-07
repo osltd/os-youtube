@@ -40,29 +40,40 @@ router.post('/pre-release', (req, res) => {
 router.post('/release', (req, res) => {
     // setup process data container
     var data = {};
-
-    // fetch articles
-    new Promise((resolve, reject) => request({
-        url    : `${config.OS.ENDPOINT}/articles?statuses=draft,published&ids=${req.body.feed}`,
-        method : 'GET',
-        auth   : {
-            'user' : config.OS.ID,
-            'pass' : config.OS.KEY
-        }
-    }, (error, resp, body) => {
-        let result = null;
-        try {result = JSON.parse(body)} catch(e) {result = null} finally {result = result || {}}
+    // setup get article method
+    var fetchArticleWithStatusnId = function(status, id){
+        console.log(`=====> Fetching ${status} posts...`);
+        // fetch articles
+        return new Promise((resolve, reject) => request({
+            url    : `${config.OS.ENDPOINT}/articles?statuses=${status}&ids=${id}`,
+            method : 'GET',
+            auth   : {
+                'user' : config.OS.ID,
+                'pass' : config.OS.KEY
+            }
+        }, (error, resp, body) => {
+            let result = null;
+            try {result = JSON.parse(body)} catch(e) {result = null} finally {result = result || {}}
+           resolve((result.data || {}).rows || []);
+        }));
+    };
+    
+    // fetch published articles
+    new Promise((resolve, reject) => fetchArticleWithStatusnId('published', req.body.feed)
+    // no articles found? fetch scheduled articles
+    .then(rows => rows.length ? resolve(rows) : fetchArticleWithStatusnId('scheduled', req.body.feed).then(resolve)))
+    // got article
+    .then(rows => new Promise((resolve, reject) => {
         // get article
-        const article = ((result.data || {}).posts || []).shift() || {};
+        const article = rows.shift() || {};
         // save article
         data.article = article;
         // pass article
-        (article.sections || []).length < 1 ? reject({
+        !(article.sections || []).length ? reject({
             code    : 404,
             message : 'page.not.found'
         }) : resolve();
     }))
-
     // fetch video
     .then(() => new Promise((resolve, reject) => {
         db.query('SELECT * FROM videos WHERE os_feed_id = ?', [data.article.id])
@@ -285,7 +296,7 @@ router.post('/release', (req, res) => {
             "INSERT INTO `logs` (`feed_id`, `shop_id`, `log_result`, `log_action`, `log_response_context`) VALUES (?,?,?,?,?)",
             [
                 req.body.feed, 
-                data.article.shop.id, 
+                ((data.article || {}).shop || {}).id | 0, 
                 'FAILED', 
                 data.youtubeFeed ? 'UPDATE' : 'CREATE',
                 !/^string$/i.test(typeof err) ? JSON.stringify(err) : err
