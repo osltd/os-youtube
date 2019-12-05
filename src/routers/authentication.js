@@ -57,8 +57,14 @@ router.get('/auth/youtube/callback', passport.authenticate('youtube',{ failureRe
         // try to parse result
         try {result = JSON.parse(body)} catch (e) {result = null} finally {result = result || null}
         // has shop id?
-        ((((result || {}).data || {}).shops || [])[0] || {}).id ? resolve(result.data.shops[0].id) : reject();
+        ((((result || {}).data || {}).rows || [])[0] || {}).id ? resolve(result.data.rows[0].id) : reject();
     })))
+    // set present shop id profile status to delete first
+    .then((shopId) => new Promise((resolve, reject) => {
+        db.query(`UPDATE profiles SET profile_status = "DELETED" WHERE os_shop_id = ?`, [shopId])
+        .then(() => resolve(shopId))
+        .catch(reject);
+    }))
     // set shop id for profile
     .then((shopId) => new Promise((resolve, reject) => {
         db.query(`UPDATE profiles SET os_shop_id = ? WHERE profile_id = ?`, [shopId, req.user.id])

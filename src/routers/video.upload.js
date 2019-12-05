@@ -110,8 +110,8 @@ router.post('/release', (req, res) => {
             code    : 401,
             message :  `video.file.not.found`
         });
-        // fetch profile
-        db.query(`SELECT * FROM profiles WHERE os_shop_id = ?`,[(data.article.shop || {}).id])
+        // fetch profile which with related shop ID and ACTIVE status
+        db.query(`SELECT * FROM profiles WHERE os_shop_id = ? AND profile_status = "ACTIVE"`,[(data.article.shop || {}).id])
         // profile exists?
         .then(rows => {
             if(rows.length) {
@@ -155,7 +155,7 @@ router.post('/release', (req, res) => {
                 oauth2Client.credentials.access_token = headers.Authorization.split(" ").pop();
                 // update access token
                 db.query(
-                    `UPDATE profiles SET profile_access_token = ? WHERE os_shop_id = ?`,
+                    `UPDATE profiles SET profile_access_token = ? WHERE os_shop_id = ? AND profile_status = "ACTIVE"`,
                     [oauth2Client.credentials.access_token, data.profile.os_shop_id]
                 )
                 // update success?
