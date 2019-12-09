@@ -67,7 +67,7 @@ router.get('/auth/youtube/callback', passport.authenticate('youtube',{ failureRe
     }))
     // set shop id for profile
     .then((shopId) => new Promise((resolve, reject) => {
-        db.query(`UPDATE profiles SET os_shop_id = ? WHERE profile_id = ?`, [shopId, req.user.id])
+        db.query(`UPDATE profiles SET os_shop_id = ?, profile_status = "ACTIVE"  WHERE profile_id = ?`, [shopId, req.user.id])
         .then(res => res.affectedRows ? resolve() : reject(`update.profile.failed[${shopId},${req.user.id}]`))
         .catch(reject);
     }))
