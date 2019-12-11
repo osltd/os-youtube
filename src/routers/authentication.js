@@ -78,7 +78,7 @@ router.get('/auth/youtube/callback', passport.authenticate('youtube',{ failureRe
         try {result = JSON.parse(body)} catch(e) {result = null} finally {result = result || {}}
         // shop status updated
         if (!result.result) {
-            // output result
+            // output failed result
             reject(error);
         } else {
             resolve(shopId);
