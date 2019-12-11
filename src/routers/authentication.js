@@ -103,10 +103,6 @@ router.get('/auth/youtube/success', (req, res) => fs.readFile(`${__dirname}/../a
                         '<title>Matching...</title>' +
                     '</head>' +
                     '<body style="margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; flex-direction: column; height: 100%;">' +
-                        // ---- Old ----
-                        //'<p style="color: #808080;">All set. This window will automatically close in <span id="countdown" style="color: #fb9e9e; font-weight: 600;">5</span>s.</p>' +
-                        //'<a style="display: inline-block; background-color: #3257a3;color: #fff; padding: 3px 20px; text-decoration: none; border-radius: 5px;" href="javascript:window.close();">Done</a>' +
-                        // ---- New ----
                         '<p style="color: #808080; text-align:center;">All set. You may now using Oneshop panel to publish your videos to YouTube now! ' + 
                         '<br/>This window will automatically close in <span id="countdown" style="color: #fb9e9e; font-weight: 600;">5</span>s.</p>' +
                         '<a style="display: inline-block; background-color: #3257a3; color: #fff; padding: 3px 20px; text-decoration: none; border-radius: 5px;" href="javascript:window.close();">Done</a>' +
@@ -143,8 +139,6 @@ router.get('/auth/youtube/failure', (req, res) => fs.readFile(`${__dirname}/../a
                         '<title>Matching...</title>' +
                     '</head>' +
                     '<body style="margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; flex-direction: column; height: 100%;">' +
-                        //'<p style="color: #808080;">Failed. This window will automatically close in <span id="countdown" style="color: #fb9e9e; font-weight: 600;">5</span>s.</p>' +
-                        //'<a style="display: inline-block; background-color: #3257a3;color: #fff; padding: 3px 20px; text-decoration: none; border-radius: 5px;" href="javascript:window.close();">Done</a>' +
                         '<p style="color: #808080; text-align:center;">Failed to authorize, please try again! ' + 
                         '<br/>Reason: ' + req.query.reason + 
                         '<br/>This window will automatically close in <span id="countdown" style="color: #fb9e9e; font-weight: 600;">5</span>s.</p>' +
