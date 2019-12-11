@@ -85,12 +85,34 @@ router.get('/auth/youtube/callback', passport.authenticate('youtube',{ failureRe
  */
 
 // --------- Auth success ---------
+// router.get('/auth/youtube/success', (req, res) => fs.readFile(`${__dirname}/../assets/callback.html`, (err, data) => {
+//     // get html
+//     var html = data.toString();
+//     // replace string
+//     html = html.replace('{{__RESULT__}}', 'Success!');
+//     html = html.replace('{{__MSG__}}', 'All set! You may now using Oneshop panel to publish your videos to YouTube now!');
+//     // set mime type
+//     res.set('content-type', 'text/html');
+//     res.status(200).end(html);
+// }));
 router.get('/auth/youtube/success', (req, res) => fs.readFile(`${__dirname}/../assets/callback.html`, (err, data) => {
     // get html
-    var html = data.toString();
-    // replace string
-    html = html.replace('{{__RESULT__}}', 'Success!');
-    html = html.replace('{{__MSG__}}', 'All set! You may now using Oneshop panel to publish your videos to YouTube now!');
+    var html =  '<html>' +
+                    '<head>' +
+                        '<meta charset="utf-8"/>' +
+                        '<title>Matching...</title>' +
+                    '</head>' +
+                    '<body style="margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; flex-direction: column; height: 100%;">' +
+                        '<p style="color: #808080;">All set. This window will automatically close in <span id="countdown" style="color: #fb9e9e; font-weight: 600;">5</span>s.</p>' +
+                        '<a style="display: inline-block; background-color: #3257a3;color: #fff; padding: 3px 20px; text-decoration: none; border-radius: 5px;" href="javascript:window.close();">Done</a>' +
+                        '<script>' +
+                            'var timer = setInterval(function() {' +
+                                'var current = parseInt(document.getElementById("countdown").innerText);' +
+                                '--current < 1 ? window.close() : (document.getElementById("countdown").innerText = current);' +
+                            '}, 1000);' +
+                        '</script>' +
+                    '</body>' +
+                '</html>';
     // set mime type
     res.set('content-type', 'text/html');
     res.status(200).end(html);
