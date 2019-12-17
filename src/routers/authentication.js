@@ -93,13 +93,13 @@ router.get('/auth/youtube/callback', passport.authenticate('youtube',{ failureRe
     // set shop id for profile
     .then((shopId) => new Promise((resolve, reject) => {
         db.query(`UPDATE profiles SET os_shop_id = ?, profile_status = "ACTIVE"  WHERE profile_id = ?`, [shopId, req.user.id])
-        .then(res => res.affectedRows ? resolve() : reject(`update.profile.failed[${shopId},${req.user.id}]`))
+        .then(res => res.affectedRows ? resolve(shopId) : reject(`update.profile.failed[${shopId},${req.user.id}]`))
         .catch(reject);
     }))
     // success
-    .then(() => res.redirect(`${config.APP.URL}/auth/youtube/success`))
+    .then((shopId) => res.redirect(`${config.APP.URL}/auth/youtube/success?shopId=${shopId}`))
     // any error occured?
-    .catch(err => res.redirect(`${config.APP.URL}/auth/youtube/failure?reason=${err}`));
+    .catch(err => res.redirect(`${config.APP.URL}/auth/youtube/failure?reason=${err}&shopId=${shopId}`));
 });
 
 
@@ -121,6 +121,7 @@ router.get('/auth/youtube/callback', passport.authenticate('youtube',{ failureRe
 //     res.status(200).end(html);
 // }));
 router.get('/auth/youtube/success', (req, res) => fs.readFile(`${__dirname}/../assets/callback.html`, (err, data) => {
+    var redirectUrl = `https://panel.oneshop.cloud/shops/${req.query.shopId}/settings`;
     // get html
     var html =  '<html>' +
                     '<head>' +
@@ -129,12 +130,12 @@ router.get('/auth/youtube/success', (req, res) => fs.readFile(`${__dirname}/../a
                     '</head>' +
                     '<body style="margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; flex-direction: column; height: 100%;">' +
                         '<p style="color: #808080; text-align:center;">All set. You may now using Oneshop panel to publish your videos to YouTube now! ' + 
-                        '<br/>This window will automatically close in <span id="countdown" style="color: #fb9e9e; font-weight: 600;">5</span>s.</p>' +
-                        '<a style="display: inline-block; background-color: #3257a3; color: #fff; padding: 3px 20px; text-decoration: none; border-radius: 5px;" href="javascript:window.close();">Done</a>' +
+                        '<br/>This window will automatically back to panel in <span id="countdown" style="color: #fb9e9e; font-weight: 600;">5</span>s.</p>' +
+                        `<a style="display: inline-block; background-color: #3257a3; color: #fff; padding: 3px 20px; text-decoration: none; border-radius: 5px;" href="javascript:location.replace('${redirectUrl}');">Done</a>` +
                         '<script>' +
                             'var timer = setInterval(function() {' +
                                 'var current = parseInt(document.getElementById("countdown").innerText);' +
-                                '--current < 1 ? window.close() : (document.getElementById("countdown").innerText = current);' +
+                                `--current < 1 ? location.replace('${redirectUrl}') : (document.getElementById("countdown").innerText = current);` +
                             '}, 1000);' +
                         '</script>' +
                     '</body>' +
@@ -157,6 +158,7 @@ router.get('/auth/youtube/success', (req, res) => fs.readFile(`${__dirname}/../a
 //     res.status(200).end(html);
 // }));
 router.get('/auth/youtube/failure', (req, res) => fs.readFile(`${__dirname}/../assets/callback.html`, (err, data) => {
+    var redirectUrl = `https://panel.oneshop.cloud/shops/${req.query.shopId}/settings`;
     // get html
     var html =  '<html>' +
                     '<head>' +
@@ -166,12 +168,12 @@ router.get('/auth/youtube/failure', (req, res) => fs.readFile(`${__dirname}/../a
                     '<body style="margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; flex-direction: column; height: 100%;">' +
                         '<p style="color: #808080; text-align:center;">Failed to authorize, please try again! ' + 
                         '<br/>Reason: ' + req.query.reason + 
-                        '<br/>This window will automatically close in <span id="countdown" style="color: #fb9e9e; font-weight: 600;">5</span>s.</p>' +
-                        '<a style="display: inline-block; background-color: #3257a3;color: #fff; padding: 3px 20px; text-decoration: none; border-radius: 5px;" href="javascript:window.close();">Done</a>' +
+                        '<br/>This window will automatically back to panel in <span id="countdown" style="color: #fb9e9e; font-weight: 600;">5</span>s.</p>' +
+                        `<a style="display: inline-block; background-color: #3257a3;color: #fff; padding: 3px 20px; text-decoration: none; border-radius: 5px;" href="javascript:location.replace('${redirectUrl}');">Done</a>` +
                         '<script>' +
                             'var timer = setInterval(function() {' +
                                 'var current = parseInt(document.getElementById("countdown").innerText);' +
-                                '--current < 1 ? window.close() : (document.getElementById("countdown").innerText = current);' +
+                                `--current < 1 ? location.replace('${redirectUrl}') : (document.getElementById("countdown").innerText = current);` +
                             '}, 1000);' +
                         '</script>' +
                     '</body>' +

@@ -291,15 +291,45 @@ router.post('/release', (req, res) => {
     .then(() => res.status(200).end('posted'))
     // output error
     .catch(err => {
+        // Check the error log of authorized access token
+        var shopIdVal = ((data.article || {}).shop || {}).id || 0;
+        var errStr = !/^string$/i.test(typeof err) ? JSON.stringify(err) : err;
+        if(errStr.includes("Token has been expired or revoked.")) {
+            // update shop status (Change shop status back to "DRAFT" state if the related token invalid)
+            request({
+                url: config.OS.ENDPOINT + '/shops/' + shopIdVal,
+                method: 'PUT',
+                headers: {
+                    'content-type': 'application/json'
+                },
+                auth: {
+                    'user': config.OS.ID,
+                    'pass': config.OS.KEY
+                },
+                body: JSON.stringify({
+                    status: 'DRAFT'
+                })
+            }, (error, resp, body) => {
+                // setup result container
+                var result = null;
+                // parse result
+                try {result = JSON.parse(body)} catch(e) {result = null} finally {result = result || {}}
+                // shop status updated
+                if (result.result) {
+                }
+            }); 
+        }
         // create log
         db.query(
             "INSERT INTO `logs` (`feed_id`, `shop_id`, `log_result`, `log_action`, `log_response_context`) VALUES (?,?,?,?,?)",
             [
                 req.body.feed, 
-                ((data.article || {}).shop || {}).id | 0, 
+                //((data.article || {}).shop || {}).id | 0, 
+                shopIdVal,
                 'FAILED', 
                 data.youtubeFeed ? 'UPDATE' : 'CREATE',
-                !/^string$/i.test(typeof err) ? JSON.stringify(err) : err
+                //!/^string$/i.test(typeof err) ? JSON.stringify(err) : err
+                errStr
             ]
         )
         // response
