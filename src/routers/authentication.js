@@ -9,7 +9,8 @@ const db                = require('../libraries/db');
 const request           = require('request');
 const fs                = require('fs');
 
-
+const csrf             = require('csurf');
+const csrfProtection   = csrf({ cookie: true });
 
 
 /**
@@ -33,7 +34,7 @@ router.get('/auth/youtube', (req, res, next) => passport.authenticate('youtube',
 /**
  *    ------------- authentication callback -------------
  */
-router.get('/auth/youtube/callback', passport.authenticate('youtube',{ failureRedirect : '/auth/youtube/failure' }), (req, res) => {
+router.get('/auth/youtube/callback', passport.authenticate('youtube',{ failureRedirect : '/auth/youtube/failure' }), csrfProtection, (req, res) => {
     // setup data conatiner
     var data = {};
     // fetch profile by id
