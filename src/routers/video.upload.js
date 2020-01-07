@@ -95,7 +95,7 @@ router.post('/release', (req, res) => {
         // save section
         data.section = section;
         // validate video
-        (section.medias || []).forEach(media => {
+        (section.media || []).forEach(media => {
             // a kind of video?
             if(/^mov|mpeg4|mp4|avi|wmv|mpegps|flv|3gpp|webm|dnxhr|prores|cineform|hevc|qt$/i.test(media.ext)){
                 // save file
@@ -294,7 +294,9 @@ router.post('/release', (req, res) => {
         // Check the error log of authorized access token
         var shopIdVal = ((data.article || {}).shop || {}).id || 0;
         var errStr = !/^string$/i.test(typeof err) ? JSON.stringify(err) : err;
-        if(errStr.includes("Token has been expired or revoked.")) {
+        //shop.not.found
+        if(errStr.includes("Token has been expired or revoked.") || 
+           errStr.includes("shop.not.found")) {
             // update shop status (Change shop status back to "DRAFT" state if the related token invalid)
             request({
                 url: config.OS.ENDPOINT + '/shops/' + shopIdVal,
