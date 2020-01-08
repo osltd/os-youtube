@@ -32,7 +32,7 @@ router.get('/auth/youtube', (req, res, next) => passport.authenticate('youtube',
 /**
  *    ------------- authentication callback -------------
  */
-router.get('/auth/youtube/callback', passport.authenticate('youtube',{ failureRedirect : '/auth/youtube/failure', session: false }), (req, res) => {
+router.get('/auth/youtube/callback', passport.authenticate('youtube',{ failureRedirect : '/auth/youtube/failure' }), (req, res) => {
     // setup data conatiner
     var data = {};
     // fetch profile by id
