@@ -22,8 +22,7 @@ router.get('/auth/youtube', (req, res, next) => passport.authenticate('youtube',
       'https://www.googleapis.com/auth/youtube.upload',
       'https://www.googleapis.com/auth/yt-analytics.readonly'
     ],
-    state   : req.query.shops,
-    display : 'popup'
+    state   : req.query.shops
   })(req, res, next));
 
 
