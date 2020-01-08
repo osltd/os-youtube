@@ -22,7 +22,8 @@ router.get('/auth/youtube', (req, res, next) => passport.authenticate('youtube',
       'https://www.googleapis.com/auth/youtube.upload',
       'https://www.googleapis.com/auth/yt-analytics.readonly'
     ],
-    state   : req.query.shops
+    state   : req.query.shops,
+    display : 'popup'
   })(req, res, next));
 
 
@@ -31,7 +32,7 @@ router.get('/auth/youtube', (req, res, next) => passport.authenticate('youtube',
 /**
  *    ------------- authentication callback -------------
  */
-router.get('/auth/youtube/callback', passport.authenticate('youtube',{ failureRedirect : '/auth/youtube/failure' }), (req, res) => {
+router.get('/auth/youtube/callback', passport.authenticate('youtube',{ failureRedirect : '/auth/youtube/failure', session: false }), (req, res) => {
     // setup data conatiner
     var data = {};
     // fetch profile by id
